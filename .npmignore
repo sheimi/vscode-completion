@@ -1,0 +1,13 @@
+.github/
+.vscode/
+.vscodeignore
+.npmignore
+.test-dist/
+coverage/
+src/
+test/
+tsconfig.json
+tsconfig.test.json
+**/*.map
+**/*.test.*
+.env*

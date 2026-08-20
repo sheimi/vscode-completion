@@ -1,0 +1,183 @@
+{
+  "name": "inline-ai-suggestions",
+  "displayName": "Inline AI Suggestions",
+  "description": "Inline code completions using OpenAI Chat Completions, OpenAI Responses, or Anthropic Messages.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.96.0"
+  },
+  "categories": [
+    "Programming Languages",
+    "Machine Learning"
+  ],
+  "keywords": [
+    "inline completion",
+    "autocomplete",
+    "openai",
+    "anthropic",
+    "claude"
+  ],
+  "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished",
+    "onCommand:inlineAi.setup",
+    "onCommand:inlineAi.setApiKey",
+    "onCommand:inlineAi.clearApiKey"
+  ],
+  "capabilities": {
+    "untrustedWorkspaces": {
+      "supported": false,
+      "description": "Inline AI Suggestions sends bounded source context to the configured API endpoint."
+    }
+  },
+  "contributes": {
+    "commands": [
+      {
+        "command": "inlineAi.setup",
+        "title": "Set Up Provider",
+        "category": "Inline AI Suggestions"
+      },
+      {
+        "command": "inlineAi.setApiKey",
+        "title": "Set API Key",
+        "category": "Inline AI Suggestions"
+      },
+      {
+        "command": "inlineAi.clearApiKey",
+        "title": "Clear API Key",
+        "category": "Inline AI Suggestions"
+      },
+      {
+        "command": "inlineAi.openSettings",
+        "title": "Open Settings",
+        "category": "Inline AI Suggestions"
+      }
+    ],
+    "configuration": {
+      "title": "Inline AI Suggestions",
+      "properties": {
+        "inlineAi.enabled": {
+          "type": "boolean",
+          "default": true,
+          "scope": "resource",
+          "description": "Enable automatic AI inline suggestions. No request is made until a model and API key are configured."
+        },
+        "inlineAi.apiFormat": {
+          "type": "string",
+          "default": "openai-responses",
+          "scope": "machine",
+          "enum": [
+            "openai-chat",
+            "openai-responses",
+            "anthropic-messages"
+          ],
+          "enumDescriptions": [
+            "OpenAI-compatible POST /chat/completions",
+            "OpenAI-compatible POST /responses",
+            "Anthropic-compatible POST /messages"
+          ],
+          "description": "Wire protocol used by the configured API."
+        },
+        "inlineAi.baseUrl": {
+          "type": "string",
+          "default": "",
+          "scope": "machine",
+          "markdownDescription": "Versioned API root without the operation path. Empty uses `https://api.openai.com/v1` or `https://api.anthropic.com/v1`, based on the selected API format."
+        },
+        "inlineAi.chatTokenField": {
+          "type": "string",
+          "default": "max_completion_tokens",
+          "scope": "machine",
+          "enum": [
+            "max_completion_tokens",
+            "max_tokens"
+          ],
+          "enumDescriptions": [
+            "Modern OpenAI Chat Completions field, required by newer reasoning models.",
+            "Legacy field used by many OpenAI-compatible gateways."
+          ],
+          "description": "Output-token field used only with the OpenAI Chat Completions format."
+        },
+        "inlineAi.model": {
+          "type": "string",
+          "default": "gpt-5.6-luna",
+          "scope": "machine",
+          "description": "Model identifier accepted by the configured endpoint."
+        },
+        "inlineAi.debounceMs": {
+          "type": "number",
+          "default": 250,
+          "minimum": 0,
+          "maximum": 5000,
+          "scope": "resource",
+          "description": "Delay before an automatic completion request. Explicit requests are immediate."
+        },
+        "inlineAi.requestTimeoutMs": {
+          "type": "number",
+          "default": 15000,
+          "minimum": 1000,
+          "maximum": 120000,
+          "scope": "machine",
+          "description": "Maximum duration of a completion request."
+        },
+        "inlineAi.maxOutputTokens": {
+          "type": "number",
+          "default": 8000,
+          "minimum": 1,
+          "maximum": 8000,
+          "scope": "resource",
+          "description": "Maximum number of tokens generated for one suggestion."
+        },
+        "inlineAi.maxPrefixCharacters": {
+          "type": "number",
+          "default": 12000,
+          "minimum": 0,
+          "maximum": 100000,
+          "scope": "resource",
+          "description": "Maximum source characters sent from before the cursor."
+        },
+        "inlineAi.maxSuffixCharacters": {
+          "type": "number",
+          "default": 4000,
+          "minimum": 0,
+          "maximum": 50000,
+          "scope": "resource",
+          "description": "Maximum source characters sent from after the cursor."
+        },
+        "inlineAi.maxSuggestionCharacters": {
+          "type": "number",
+          "default": 8000,
+          "minimum": 1,
+          "maximum": 50000,
+          "scope": "resource",
+          "description": "Maximum number of characters accepted in a returned suggestion."
+        },
+        "inlineAi.excludedLanguages": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "scope": "resource",
+          "description": "VS Code language identifiers for which requests are disabled."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run build",
+    "typecheck": "tsc --noEmit",
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "test:compile": "tsc -p tsconfig.test.json",
+    "test": "npm run test:compile && node --test .test-dist/test/*.test.js",
+    "check": "npm run typecheck && npm test && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "20.17.10",
+    "@types/vscode": "1.96.0",
+    "typescript": "5.7.2"
+  }
+}
